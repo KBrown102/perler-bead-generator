@@ -158,7 +158,6 @@
     font-size: 12px; background: #fcfbf8;
   }
   .swatch { width: 20px; height: 20px; border-radius: 5px; border: 1px solid rgba(0,0,0,.12); flex: 0 0 auto; }
-  .sym { color: var(--accent-2); font-weight: 700; width: 16px; text-align: center; flex: 0 0 auto; }
   .meta { flex: 1 1 auto; min-width: 0; }
   .meta b { font-variant-numeric: tabular-nums; }
   .meta span { color: var(--muted); }
@@ -893,7 +892,6 @@ function renderLegend() {
   legendEl.innerHTML = items.map(it =>
     '<div class="legend-item">' +
       '<span class="swatch" style="background:' + it.color.hex + '"></span>' +
-      '<span class="sym">' + it.symbol + '</span>' +
       '<span class="meta"><b>' + it.color.code + '</b> <span>' + it.color.name + '</span></span>' +
       '<span class="count">×' + it.count + '</span>' +
     '</div>'
@@ -944,7 +942,7 @@ function exportPNG() {
     ctx.strokeRect(x + 0.5, y + 0.5, 17, 17);
     ctx.fillStyle = '#222';
     ctx.font = '13px "Segoe UI", "Microsoft YaHei", sans-serif';
-    ctx.fillText(it.symbol + '  ' + it.color.code + ' ' + it.color.name + '  ×' + it.count, x + 26, y + 14);
+    ctx.fillText(it.color.code + ' ' + it.color.name + '  ×' + it.count, x + 26, y + 14);
   });
 
   const a = document.createElement('a');
