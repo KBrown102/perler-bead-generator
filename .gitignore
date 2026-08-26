@@ -1,0 +1,8 @@
+# 导入脚本的临时文件
+_beadcolors.zip
+_beadcolors_tmp/
+__check.tmp.js
+
+# 系统文件
+.DS_Store
+Thumbs.db
