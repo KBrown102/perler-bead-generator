@@ -141,10 +141,11 @@
     padding: 10px;
     width: 100%;
     box-sizing: border-box;
+    position: relative;
   }
   .canvas-wrap canvas { display: block; margin: 0 auto; }
   #preview { image-rendering: pixelated; }
-  #editor { cursor: crosshair; }
+  #editor { cursor: crosshair; touch-action: none; }
   .legend {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -172,12 +173,52 @@
   }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   .hidden { display: none !important; }
+
+  /* ---- 智能去背景 / 加载 ---- */
+  .loading-overlay {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+    background: rgba(255,255,255,.85);
+    z-index: 5;
+  }
+  .spinner {
+    width: 30px; height: 30px;
+    border: 3px solid #e7e1d8; border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  #loadingText { font-size: 13px; color: var(--ink); }
+
+  button, .btn, .tab, .tool { touch-action: manipulation; }
+
+  .controls-toggle { display: none; align-items: center; gap: 6px; margin-left: auto; }
+
+  /* ---- 手机端适配 ---- */
+  @media (max-width: 900px) {
+    .controls-toggle { display: inline-flex; }
+  }
+  @media (max-width: 640px) {
+    header { padding: 14px 14px 10px; }
+    header .sub { display: none; }
+    header h1 { font-size: 19px; }
+    main { padding: 6px 12px 30px; gap: 12px; }
+    .panel { padding: 14px; }
+    .output { position: static; }
+    .canvas-wrap { height: 52vh; min-height: 220px; }
+    .tool { padding: 9px 12px; font-size: 13px; }
+    button, .btn { padding: 10px 14px; font-size: 14px; }
+    .tab { padding: 8px 14px; font-size: 14px; }
+    .legend { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+    .tool-opts { gap: 8px; }
+  }
 </style>
 </head>
 <body>
 <header>
   <h1>拼豆图纸生成器<span class="dot">.</span></h1>
   <span class="sub">上传图片 → 编辑/抠图 → 网格化 → 减色/抖动 → 匹配豆色 → 出图纸 + 购物清单 · 纯本地运行，图片不上传</span>
+  <button id="controlsToggle" class="controls-toggle">⚙ 参数设置</button>
 </header>
 
 <main>
@@ -259,6 +300,7 @@
         <span class="opt" id="optBrush">笔刷 <input type="range" id="brushSize" min="1" max="40" value="6"></span>
         <span class="opt" id="optTol">容差 <input type="range" id="tolerance" min="0" max="120" value="40"></span>
         <span class="opt" id="optColor">颜色 <input type="color" id="pencilColor" value="#e0245e"></span>
+        <button id="smartBgBtn">✨ 智能去背景</button>
         <button id="undoBtn">撤销</button>
         <button id="applyCropBtn" class="primary hidden">应用裁切</button>
       </div>
@@ -268,6 +310,10 @@
     <div class="canvas-wrap" id="canvasWrap">
       <canvas id="preview" width="0" height="0"></canvas>
       <canvas id="editor" width="0" height="0" class="hidden"></canvas>
+      <div class="loading-overlay hidden" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div id="loadingText">AI 抠图中…</div>
+      </div>
     </div>
     <div id="legend" class="legend"></div>
   </section>
@@ -441,6 +487,10 @@ const toleranceInput = document.getElementById('tolerance');
 const pencilColorInput = document.getElementById('pencilColor');
 const undoBtn = document.getElementById('undoBtn');
 const applyCropBtn = document.getElementById('applyCropBtn');
+const smartBgBtn = document.getElementById('smartBgBtn');
+const loadingOverlay = document.getElementById('loadingOverlay');
+const loadingText = document.getElementById('loadingText');
+const controlsToggle = document.getElementById('controlsToggle');
 
 /* ---------------- 图片载入 ---------------- */
 function setSource(canvas) {
@@ -927,6 +977,55 @@ function fallbackCopy(text) {
   document.body.removeChild(ta);
 }
 
+/* ---------------- 智能去背景 ---------------- */
+let smartBusy = false;
+function showLoading(show, text) {
+  loadingOverlay.classList.toggle('hidden', !show);
+  if (text) loadingText.textContent = text;
+}
+
+async function smartRemoveBg() {
+  if (smartBusy) return;
+  if (!sourceCanvas) { toast('请先上传图片'); return; }
+  if (!window.__bgRemovalPromise) { toast('AI 抠图模块尚未加载（需联网），请稍后重试'); return; }
+  smartBusy = true;
+  smartBgBtn.disabled = true;
+  showLoading(true, '正在加载 AI 模型…');
+  try {
+    const removeBackground = await window.__bgRemovalPromise;
+    if (!removeBackground) throw new Error('module load failed');
+    showLoading(true, 'AI 抠图中…（首次需下载模型，稍慢）');
+    pushUndo();
+    const blob = await removeBackground(sourceCanvas.toDataURL('image/png'), {
+      model: 'isnet_quint8',
+      progress: (key, current, total) => {
+        showLoading(true, 'AI 抠图中… ' + (current && total ? Math.round(current / total * 100) + '%' : ''));
+      }
+    });
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement('canvas');
+      c.width = img.naturalWidth; c.height = img.naturalHeight;
+      c.getContext('2d').drawImage(img, 0, 0);
+      sourceCanvas = c;
+      cropRect = null;
+      updateCropUI();
+      showLoading(false);
+      renderEditor();
+      process();
+      toast('智能去背景完成');
+    };
+    img.onerror = () => { showLoading(false); toast('结果解析失败'); };
+    img.src = URL.createObjectURL(blob);
+  } catch (e) {
+    showLoading(false);
+    toast('智能去背景失败：' + (e && e.message ? e.message : '请检查网络后重试'));
+  } finally {
+    smartBusy = false;
+    smartBgBtn.disabled = false;
+  }
+}
+
 /* ---------------- 编辑器：工具 ---------------- */
 const TOOL_HINTS = {
   crop: '按住拖动框选区域，松开后点「应用裁切」',
@@ -1139,11 +1238,17 @@ toleranceInput.addEventListener('input', () => { tolerance = parseInt(toleranceI
 pencilColorInput.addEventListener('input', () => { pencilColor = pencilColorInput.value; });
 undoBtn.addEventListener('click', undo);
 applyCropBtn.addEventListener('click', applyCrop);
+smartBgBtn.addEventListener('click', smartRemoveBg);
+controlsToggle.addEventListener('click', () => {
+  document.querySelector('.controls-col').classList.toggle('hidden');
+});
 
-/* 编辑器鼠标事件 */
-editor.addEventListener('mousedown', e => {
+/* 编辑器指针事件（鼠标 + 触摸） */
+function editorPointerDown(e) {
   e.preventDefault();
   if (!sourceCanvas) return;
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  editor.setPointerCapture(e.pointerId);
   const p = eventToSource(e);
   if (tool === 'crop') {
     cropDragging = true;
@@ -1157,8 +1262,8 @@ editor.addEventListener('mousedown', e => {
   drawing = true;
   lastX = p.sx; lastY = p.sy;
   strokeBrush(lastX, lastY, lastX, lastY);
-});
-editor.addEventListener('mousemove', e => {
+}
+function editorPointerMove(e) {
   if (!sourceCanvas) return;
   const p = eventToSource(e);
   if (cropDragging) {
@@ -1170,11 +1275,15 @@ editor.addEventListener('mousemove', e => {
     strokeBrush(lastX, lastY, p.sx, p.sy);
     lastX = p.sx; lastY = p.sy;
   }
-});
-window.addEventListener('mouseup', () => {
+}
+function editorPointerEnd(e) {
   if (drawing) { drawing = false; process(); }
   if (cropDragging) { cropDragging = false; updateCropUI(); updateToolUI(); }
-});
+}
+editor.addEventListener('pointerdown', editorPointerDown);
+editor.addEventListener('pointermove', editorPointerMove);
+editor.addEventListener('pointerup', editorPointerEnd);
+editor.addEventListener('pointercancel', editorPointerEnd);
 
 /* ---------------- 初始化 ---------------- */
 (function populatePaletteSelect() {
@@ -1191,6 +1300,11 @@ window.addEventListener('mouseup', () => {
 updateZoomLabel();
 updateToolUI();
 makeSample();
+</script>
+<script type="module">
+window.__bgRemovalPromise = import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1/+esm')
+  .then(m => m.removeBackground)
+  .catch(() => null);
 </script>
 </body>
 </html>
