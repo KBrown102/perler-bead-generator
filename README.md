@@ -2,6 +2,10 @@
 
 把本地图片转成拼豆（perler / hama / artkal 等熔珠）图纸的网页工具。**纯本地运行，无需安装、图片不上传。**
 
+## 在线预览
+
+👉 [https://kbrown102.github.io/perler-bead-generator/](https://kbrown102.github.io/perler-bead-generator/)
+
 ## 快速开始
 
 直接双击打开 `index.html` 即可（无需服务器、无需构建、无任何依赖）。
