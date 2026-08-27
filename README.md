@@ -36,3 +36,25 @@
 - 单文件 `index.html`（内联 CSS/JS，无框架、无依赖）
 - 核心算法：网格降采样 → 最近色匹配（含抖动）→ 豆色映射
 - 后续可复用核心逻辑打包到桌面（Electron/Tauri）、移动端（Capacitor）、微信小程序（Canvas 2D）
+
+## Android App（一键打包）
+
+本项目已内置 [Capacitor](https://capacitorjs.com/) 配置，可把网页版直接套壳成 Android App：
+
+1. 安装 [Node.js](https://nodejs.org/) 和 [Android Studio](https://developer.android.com/studio)（内含 JDK 与 Android SDK）
+2. 双击运行 `build-android.bat`
+3. 完成后 APK 在 `android\app\build\outputs\apk\debug\app-debug.apk`，传到手机安装即可
+
+目录说明：
+
+```
+perler-bead-generator/
+├── index.html  palettes.js  sw.js  manifest.json   ← Web 源码（GitHub Pages 也用它）
+├── capacitor.config.json                          ← Capacitor 配置
+├── package.json                                   ← Node 依赖
+├── build-android.bat                              ← 一键打包脚本
+├── www/       ← 构建时生成（不提交）
+└── android/   ← 构建时生成（不提交）
+```
+
+> 说明：`www/`、`android/`、`node_modules/` 均为构建产物，已加入 `.gitignore`；首次打包会联网下载依赖与 Gradle，耗时较长。当前为 debug 签名包（可直接安装）；上架应用商店需另行配置 release 签名。

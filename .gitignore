@@ -6,3 +6,8 @@ __check.tmp.js
 # 系统文件
 .DS_Store
 Thumbs.db
+
+# Node / Capacitor 构建产物
+node_modules/
+www/
+android/

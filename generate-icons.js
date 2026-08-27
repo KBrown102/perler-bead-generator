@@ -43,7 +43,7 @@ function encodePNG(w, h, rgba) {
 }
 
 /* ---- 绘制：珊瑚底 + 白色拼豆爱心 ---- */
-const BG = [0xE0, 0x61, 0x3F]; // #e0613f
+const BG = [0x38, 0xBD, 0xF8]; // #38bdf8 天空蓝
 
 function drawIcon(size) {
   const buf = Buffer.alloc(size * size * 4);

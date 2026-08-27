@@ -1,0 +1,8 @@
+{
+  "appId": "com.perlerbeads.generator",
+  "appName": "拼豆图纸生成器",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}
