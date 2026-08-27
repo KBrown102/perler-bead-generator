@@ -2,8 +2,16 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>拼豆图纸生成器 · Perler Pattern Maker</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#e0613f">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="拼豆图纸">
 <style>
   :root {
     --bg: #f6f2ec;
@@ -1285,6 +1293,13 @@ editor.addEventListener('pointercancel', editorPointerEnd);
 updateZoomLabel();
 updateToolUI();
 makeSample();
+
+/* PWA：注册 Service Worker */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
 </script>
 <script type="module">
 window.__bgRemovalPromise = import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1/+esm')
