@@ -58,3 +58,7 @@ perler-bead-generator/
 ```
 
 > 说明：`www/`、`android/`、`node_modules/` 均为构建产物，已加入 `.gitignore`；首次打包会联网下载依赖与 Gradle，耗时较长。当前为 debug 签名包（可直接安装）；上架应用商店需另行配置 release 签名。
+
+## License
+
+本项目使用 MIT License，详见 [LICENSE](./LICENSE) 文件。
