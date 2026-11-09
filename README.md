@@ -8,6 +8,25 @@
 
 备用地址：[https://kbrown102.github.io/perler-bead-generator/](https://kbrown102.github.io/perler-bead-generator/)
 
+## 截图
+
+**主界面（手机端：顶部工具 / 中部图纸 / 底部步骤条）**
+
+<img src="docs/screenshots/mobile-main.png" width="320" alt="主界面">
+
+**按住「对比」看未简化版**（松手恢复，可判断简化减得够不够）
+
+<img src="docs/screenshots/mobile-compare.png" width="320" alt="按住对比">
+
+**像素画 1:1 还原**（65×70 图标 → 8 色，线条干净）
+
+<img src="docs/screenshots/mobile-pixel.png" width="320" alt="像素画 1:1">
+
+**导出的图纸**（每颗豆上印色号 + 下方色号清单，可直接照着拼）
+
+<img src="docs/screenshots/export-chart.jpg" width="640" alt="导出的图纸">
+
+
 ## 快速开始
 
 直接双击打开 `index.html` 即可（无需服务器、无需构建、无任何依赖）。
