@@ -1,5 +1,13 @@
-// 拼豆图纸生成器 Service Worker：缓存应用外壳，支持离线打开
-const CACHE = 'perler-bead-v1';
+/* PWA：缓存应用外壳 + 全部脚本/样式，支持离线打开 */
+const CACHE = 'perler-bead-v16';
+const SCRIPTS = [
+  'src/util.js', 'src/perf.js', 'src/history.js', 'src/viewport.js', 'src/state.js',
+  'src/dom.js', 'src/palette.js', 'src/color.js', 'src/image.js', 'src/quantize.js',
+  'src/outline.js', 'src/region.js', 'src/pipeline.js', 'src/legend.js', 'src/renderer.js', 'src/editor.js',
+  'src/tools.js', 'src/exporter.js', 'src/source-ops.js', 'src/sheet.js', 'src/suggest.js', 'src/compare.js', 'src/panels.js',
+  'src/app.js'
+];
+const STYLES = ['styles/base.css', 'styles/components.css', 'styles/layout-mobile.css'];
 const ASSETS = [
   './',
   './index.html',
@@ -7,7 +15,7 @@ const ASSETS = [
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png'
-];
+].concat(SCRIPTS.map(s => './' + s)).concat(STYLES.map(s => './' + s));
 
 self.addEventListener('install', (e) => {
   e.waitUntil(

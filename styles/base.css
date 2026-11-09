@@ -1,0 +1,108 @@
+/* base.css */
+:root {
+    --bg: #f6f2ec;
+    --card: #ffffff;
+    --ink: #2c2a26;
+    --muted: #8a857c;
+    --accent: #e0613f;
+    --accent-2: #2e8b8b;
+    --line: #e7e1d8;
+    --shadow: 0 1px 3px rgba(60,50,40,.08), 0 8px 24px rgba(60,50,40,.06);
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  header {
+    padding: 22px 28px 16px;
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  header h1 { margin: 0; font-size: 22px; letter-spacing: .5px; }
+  header h1 .dot { color: var(--accent); }
+  header .sub { color: var(--muted); font-size: 13px; }
+  main {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 18px;
+    padding: 6px 28px 40px;
+    align-items: start;
+  }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+  .panel {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 18px;
+  }
+  .panel h2 {
+    margin: 0 0 12px;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  section.panel { margin-bottom: 18px; }
+
+  /* ---- upload ---- */
+  .dropzone {
+    border: 2px dashed #d8cfc2;
+    border-radius: 12px;
+    padding: 22px 14px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+    background: #fbf9f5;
+  }
+  .dropzone:hover, .dropzone.drag { border-color: var(--accent); background: #fdf1ec; }
+  .dropzone strong { display: block; font-size: 15px; color: var(--ink); margin-bottom: 4px; }
+  .btn-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  button, .btn {
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--ink);
+    border-radius: 9px;
+    padding: 8px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .15s;
+    font-family: inherit;
+  }
+  button:hover { border-color: var(--accent); color: var(--accent); }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  button.primary:hover { background: #c9502f; color: #fff; }
+  button.ghost { background: transparent; }
+
+  /* ---- controls ---- */
+  .field { margin: 12px 0; }
+  .field label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .field label .val { color: var(--accent); font-weight: 600; font-variant-numeric: tabular-nums; }
+  input[type="range"] { width: 100%; accent-color: var(--accent); }
+  select {
+    width: 100%; padding: 8px 10px; border: 1px solid var(--line);
+    border-radius: 9px; font-size: 13px; background: #fff; font-family: inherit; color: var(--ink);
+  }
+  .check { display: flex; align-items: center; gap: 8px; font-size: 13px; margin: 10px 0; cursor: pointer; user-select: none; }
+  .check input { accent-color: var(--accent); width: 16px; height: 16px; }
+  .presets { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+  .presets button { padding: 5px 10px; font-size: 12px; }
+
+.hidden { display: none !important; }
