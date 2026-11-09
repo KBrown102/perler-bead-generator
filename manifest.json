@@ -1,7 +1,7 @@
 {
   "name": "拼豆图纸生成器",
   "short_name": "拼豆图纸",
-  "description": "上传图片生成拼豆图纸与购物清单",
+  "description": "上传图片生成带色号、分板与成品尺寸的拼豆图纸，支持像素画 1:1 还原与自动去背景",
   "lang": "zh-CN",
   "start_url": "./",
   "scope": "./",

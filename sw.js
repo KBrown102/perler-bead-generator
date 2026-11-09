@@ -1,5 +1,5 @@
 /* PWA：缓存应用外壳 + 全部脚本/样式，支持离线打开 */
-const CACHE = 'perler-bead-v16';
+const CACHE = 'perler-bead-v17';
 const SCRIPTS = [
   'src/util.js', 'src/perf.js', 'src/history.js', 'src/viewport.js', 'src/state.js',
   'src/dom.js', 'src/palette.js', 'src/color.js', 'src/image.js', 'src/quantize.js',
